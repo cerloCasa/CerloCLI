@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "cerlocli"
+version = "1.0.0"
+description = "Toolkit leggero per applicazioni CLI interattive in Python"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["cli*"]
