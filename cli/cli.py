@@ -98,6 +98,30 @@ class CLI:
         self._output.write(str(text) + '\n')
         self._output.flush()
 
+    def success(self, text: str = ''):
+        """Stampa un messaggio di successo in verde.
+
+        Args:
+            text: Testo del messaggio.
+        """
+        self.print(Color.GREEN + text + Color.DEFAULT)
+
+    def warn(self, text: str = ''):
+        """Stampa un avviso in giallo.
+
+        Args:
+            text: Testo dell'avviso.
+        """
+        self.print(Color.YELLOW + text + Color.DEFAULT)
+
+    def error(self, text: str = ''):
+        """Stampa un errore in rosso.
+
+        Args:
+            text: Testo dell'errore.
+        """
+        self.print(Color.RED + text + Color.DEFAULT)
+
     # --- input ---
 
     def ask(self, prompt: str, validator: Callable[[str], bool] = None, error: str = 'Input non valido.') -> str:
@@ -220,6 +244,6 @@ class CLI:
                     idx = int(raw) - 1
                     if 0 <= idx < len(options):
                         return options[idx]
-                self.print(f'  Inserisci un numero tra 1 e {len(options)}.')
+                self.warn(f'Inserisci un numero tra 1 e {len(options)}.')
         except KeyboardInterrupt:
             self._exit()

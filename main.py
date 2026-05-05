@@ -13,7 +13,7 @@ if __name__ == '__main__':
         Option('Rust', 'rs'),
         Option('Go', 'go'),
     ])
-    cli.print(f'Ottima scelta: {lang}')
+    cli.success(f'Ottima scelta: {lang}')
 
     ok = cli.confirm('Vuoi uscire?', default=False)
     cli.print('Arrivederci!' if ok else 'Continuiamo allora.')
