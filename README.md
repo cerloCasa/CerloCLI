@@ -36,9 +36,9 @@ pwd = cli.ask_password('Password:')
 
 # Menu interattivo
 lingua = cli.choose('Linguaggio preferito?', [
-    Option('Python', 'py'),
-    Option('TypeScript', 'ts'),
-    Option('Rust', 'rs'),
+    Option('py', 'Python'),
+    Option('ts', 'TypeScript'),
+    Option('rs', 'Rust'),
 ])
 
 # Conferma sì/no
@@ -85,9 +85,9 @@ cli.print(Color.BLUE + 'testo blu' + Color.DEFAULT)
 | `stop_spinner()` | Ferma lo spinner e pulisce la riga |
 | `set_exit_message(message)` | Imposta il messaggio mostrato all'uscita |
 
-### `Option(label, value)`
+### `Option(value, label=None)`
 
-Voce di un menu. Se `value` è omesso coincide con `label`.
+Voce di un menu. `value` è il dato restituito da `choose()`; `label` è il testo mostrato all'utente (se omessa coincide con `value`). Usa `.get()` per accedere al valore.
 
 ### `Color`
 

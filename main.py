@@ -10,10 +10,10 @@ if __name__ == '__main__':
     cli.print(f'Ciao, {name}!')
 
     lang = cli.choose('Linguaggio preferito?', [
-        Option('Python', 'py'),
-        Option('TypeScript', 'ts'),
-        Option('Rust', 'rs'),
-        Option('Go', 'go'),
+        Option('PY', 'Python'),
+        Option('TS', 'Typescript'),
+        Option('RU', 'Rust'),
+        Option('GO'),
     ])
     cli.success(f'Ottima scelta: {lang}')
 

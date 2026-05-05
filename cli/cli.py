@@ -50,12 +50,15 @@ def _read_key() -> str:
 
 
 class Option:
-    def __init__(self, label: str, value: Any = None):
-        self.label = label
-        self.value = value if value is not None else label
+    def __init__(self, value: Any, label: str = None):
+        self.value = value
+        self.label = label if label is not None else value
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.label
+
+    def get(self) -> Any:
+        return self.value
 
 
 class CLI:

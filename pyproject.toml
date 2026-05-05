@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cerlocli"
-version = "1.0.0"
+version = "1.1.0"
 description = "Toolkit leggero per applicazioni CLI interattive in Python"
 requires-python = ">=3.10"
 
