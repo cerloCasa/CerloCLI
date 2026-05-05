@@ -55,10 +55,13 @@ class Option:
 
 
 class CLI:
-    def __init__(self, input=None, output=None, exit_message: str = 'Uscita.'):
+    def __init__(self, input=None, output=None):
         self._input = input or sys.stdin
         self._output = output or sys.stdout
-        self._exit_message = exit_message
+        self._exit_message = ''
+
+    def set_exit_message(self, message: str):
+        self._exit_message = message or ''
 
     def _exit(self):
         self.print(f'\n{self._exit_message}')
