@@ -17,7 +17,7 @@ Zero dipendenze esterne, compatibile con Windows, macOS e Linux.
 ## Installazione
 
 ```bash
-pip install -e /path/to/CerloCLI
+pip install git+https://github.com/cerloCasa/CerloCLI.git
 ```
 
 ## Utilizzo
