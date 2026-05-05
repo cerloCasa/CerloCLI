@@ -2,6 +2,7 @@ from cli import CLI, Option
 
 if __name__ == '__main__':
     cli = CLI()
+    cli.set_exit_message('Uscita pulita')
 
     name = cli.ask('Come ti chiami?')
     cli.print(f'Ciao, {name}!')

@@ -1,5 +1,6 @@
 import sys
 from typing import Any, Callable
+from banner import banner
 
 # Abilita sequenze ANSI su Windows (richiesto su cmd.exe, no-op su Windows Terminal)
 if sys.platform == 'win32':
@@ -55,10 +56,11 @@ class Option:
 
 
 class CLI:
-    def __init__(self, input=None, output=None):
+    def __init__(self, name: str = None, input=None, output=None):
         self._input = input or sys.stdin
         self._output = output or sys.stdout
         self._exit_message = ''
+        if name is not None: self.print(banner(name))
 
     def set_exit_message(self, message: str):
         self._exit_message = message or ''
