@@ -1,6 +1,6 @@
 import sys
 from typing import Any, Callable
-from banner import banner
+from .banner import banner
 
 # Abilita sequenze ANSI su Windows (richiesto su cmd.exe, no-op su Windows Terminal)
 if sys.platform == 'win32':
