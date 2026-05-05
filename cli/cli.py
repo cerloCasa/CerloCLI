@@ -150,6 +150,71 @@ class CLI:
         except KeyboardInterrupt:
             self._exit()
 
+    def ask_password(self, prompt: str) -> str:
+        """Chiede una password mostrando asterischi al posto dei caratteri.
+
+        Ogni carattere digitato viene sostituito da ``*`` sullo schermo.
+        Il backspace rimuove l'ultimo carattere. Ctrl+C termina il processo.
+
+        Args:
+            prompt: Testo mostrato prima del cursore di input.
+
+        Returns:
+            La password inserita dall'utente in chiaro.
+        """
+        try:
+            self._output.write(prompt + ' ')
+            self._output.flush()
+            buf = []
+
+            if sys.platform == 'win32':
+                import msvcrt
+                while True:
+                    ch = msvcrt.getwch()
+                    if ch in ('\r', '\n'):
+                        self._output.write('\n')
+                        self._output.flush()
+                        return ''.join(buf)
+                    if ch == '\x03':
+                        raise KeyboardInterrupt
+                    if ch in ('\x08', '\x7f'):
+                        if buf:
+                            buf.pop()
+                            self._output.write('\b \b')
+                            self._output.flush()
+                    elif ch >= ' ':
+                        buf.append(ch)
+                        self._output.write('*')
+                        self._output.flush()
+            else:
+                import tty
+                import termios
+                fd = sys.stdin.fileno()
+                old = termios.tcgetattr(fd)
+                try:
+                    tty.setraw(fd)
+                    while True:
+                        ch = sys.stdin.read(1)
+                        if ch in ('\r', '\n'):
+                            self._output.write('\n')
+                            self._output.flush()
+                            return ''.join(buf)
+                        if ch == '\x03':
+                            raise KeyboardInterrupt
+                        if ch in ('\x08', '\x7f'):
+                            if buf:
+                                buf.pop()
+                                self._output.write('\b \b')
+                                self._output.flush()
+                        elif ch >= ' ':
+                            buf.append(ch)
+                            self._output.write('*')
+                            self._output.flush()
+                finally:
+                    termios.tcsetattr(fd, termios.TCSADRAIN, old)
+        except KeyboardInterrupt:
+            self._exit()
+
     def confirm(self, prompt: str, default: bool = True) -> bool:
         """Chiede conferma sì/no tramite menu interattivo.
 

@@ -4,7 +4,7 @@ if __name__ == '__main__':
     cli = CLI('CLI Test', color=Color.BLUE)
     cli.set_exit_message('Uscita pulita')
 
-    name = cli.ask('Come ti chiami?')
+    name = cli.ask_password('Come ti chiami?')
     cli.print(f'Ciao, {name}!')
 
     lang = cli.choose('Linguaggio preferito?', [
