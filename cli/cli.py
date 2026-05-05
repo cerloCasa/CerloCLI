@@ -57,12 +57,24 @@ class Option:
 
 class CLI:
     def __init__(self, name: str = None, input=None, output=None):
+        """Inizializza l'interfaccia CLI.
+
+        Args:
+            name: Nome dell'applicazione. Se fornito, stampa un banner ASCII all'avvio.
+            input: Stream di input (default: sys.stdin).
+            output: Stream di output (default: sys.stdout).
+        """
         self._input = input or sys.stdin
         self._output = output or sys.stdout
         self._exit_message = ''
         if name is not None: self.print(banner(name))
 
     def set_exit_message(self, message: str):
+        """Imposta il messaggio mostrato all'uscita (Ctrl+C o exit).
+
+        Args:
+            message: Testo da stampare prima di terminare il processo.
+        """
         self._exit_message = message or ''
 
     def _exit(self):
@@ -75,13 +87,31 @@ class CLI:
     # --- output ---
 
     def print(self, text: str = ''):
+        """Stampa una riga sullo stream di output.
+
+        Args:
+            text: Testo da stampare. Se omesso stampa una riga vuota.
+        """
         self._output.write(str(text) + '\n')
         self._output.flush()
 
     # --- input ---
 
     def ask(self, prompt: str, validator: Callable[[str], bool] = None, error: str = 'Input non valido.') -> str:
-        """Chiede testo libero. Se fornito un validator, ripete finché non è valido."""
+        """Chiede testo libero all'utente.
+
+        Se viene fornito un ``validator``, il prompt viene ripetuto finché
+        la funzione non ritorna ``True`` per il valore inserito.
+        Ctrl+C termina il processo con il messaggio di uscita configurato.
+
+        Args:
+            prompt: Testo mostrato prima del cursore di input.
+            validator: Funzione opzionale ``(str) -> bool`` per validare l'input.
+            error: Messaggio mostrato quando la validazione fallisce.
+
+        Returns:
+            La stringa inserita dall'utente, senza newline finale.
+        """
         try:
             while True:
                 self._output.write(prompt + ' ')
@@ -94,7 +124,18 @@ class CLI:
             self._exit()
 
     def confirm(self, prompt: str, default: bool = True) -> bool:
-        """Chiede sì/no. Ritorna bool."""
+        """Chiede conferma sì/no tramite menu interattivo.
+
+        Presenta due opzioni (Yes / No) navigabili con le frecce.
+        L'opzione predefinita viene mostrata per prima.
+
+        Args:
+            prompt: Domanda da mostrare all'utente.
+            default: Se ``True`` (default) Yes appare prima; se ``False`` appare No.
+
+        Returns:
+            ``True`` se l'utente sceglie Yes, ``False`` se sceglie No.
+        """
         options = [
             Option('Yes', True),
             Option('No', False)
@@ -105,9 +146,22 @@ class CLI:
         return self.choose(prompt, options).value
 
     def choose(self, prompt: str, options: list[Option]) -> Option:
-        """
-        Mostra un menu navigabile con le frecce ↑↓. Invio conferma la scelta.
-        Se l'output non è un TTY cade automaticamente sul fallback numerico.
+        """Mostra un menu interattivo navigabile con le frecce ↑↓.
+
+        Il menu viene ridisegnato in-place ad ogni pressione di tasto.
+        Premere Invio conferma la voce evidenziata. Ctrl+C termina il processo.
+        Se l'output non è un TTY (pipe, file, test) ricade automaticamente
+        sul fallback numerico ``_choose_numeric``.
+
+        Args:
+            prompt: Titolo/domanda mostrata sopra il menu.
+            options: Lista di ``Option`` tra cui scegliere (non vuota).
+
+        Returns:
+            L'``Option`` selezionata dall'utente.
+
+        Raises:
+            ValueError: Se ``options`` è una lista vuota.
         """
         if not options:
             raise ValueError('La lista di opzioni non può essere vuota.')
