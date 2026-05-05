@@ -1,7 +1,7 @@
 from cli import CLI, Option
 
 if __name__ == '__main__':
-    cli = CLI()
+    cli = CLI(exit_message='Programma interrotto. Arrivederci!')
 
     name = cli.ask('Come ti chiami?')
     cli.print(f'Ciao, {name}!')

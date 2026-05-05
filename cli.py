@@ -55,9 +55,14 @@ class Option:
 
 
 class CLI:
-    def __init__(self, input=None, output=None):
+    def __init__(self, input=None, output=None, exit_message: str = 'Uscita.'):
         self._input = input or sys.stdin
         self._output = output or sys.stdout
+        self._exit_message = exit_message
+
+    def _exit(self):
+        self.print(f'\n{self._exit_message}')
+        sys.exit(0)
 
     def _is_tty(self) -> bool:
         return hasattr(self._output, 'isatty') and self._output.isatty()
@@ -72,13 +77,16 @@ class CLI:
 
     def ask(self, prompt: str, validator: Callable[[str], bool] = None, error: str = 'Input non valido.') -> str:
         """Chiede testo libero. Se fornito un validator, ripete finché non è valido."""
-        while True:
-            self._output.write(prompt + ' ')
-            self._output.flush()
-            value = self._input.readline().rstrip('\n')
-            if validator is None or validator(value):
-                return value
-            self.print(f'  {error}')
+        try:
+            while True:
+                self._output.write(prompt + ' ')
+                self._output.flush()
+                value = self._input.readline().rstrip('\n')
+                if validator is None or validator(value):
+                    return value
+                self.print(f'  {error}')
+        except KeyboardInterrupt:
+            self._exit()
 
     def confirm(self, prompt: str, default: bool = True) -> bool:
         """Chiede sì/no. Ritorna bool."""
@@ -130,21 +138,26 @@ class CLI:
                     render()
                 elif key == 'ENTER':
                     return options[selected]
+        except KeyboardInterrupt:
+            self._exit()
         finally:
             self._output.write('\033[?25h')  # ripristina il cursore
             self._output.flush()
 
     def _choose_numeric(self, prompt: str, options: list[Option]) -> Option:
         """Fallback testabile: selezione tramite numero."""
-        self.print(prompt)
-        for i, opt in enumerate(options, 1):
-            self.print(f'  {i}. {opt.label}')
-        while True:
-            self._output.write(f'Scelta [1-{len(options)}]: ')
-            self._output.flush()
-            raw = self._input.readline().rstrip('\n').strip()
-            if raw.isdigit():
-                idx = int(raw) - 1
-                if 0 <= idx < len(options):
-                    return options[idx]
-            self.print(f'  Inserisci un numero tra 1 e {len(options)}.')
+        try:
+            self.print(prompt)
+            for i, opt in enumerate(options, 1):
+                self.print(f'  {i}. {opt.label}')
+            while True:
+                self._output.write(f'Scelta [1-{len(options)}]: ')
+                self._output.flush()
+                raw = self._input.readline().rstrip('\n').strip()
+                if raw.isdigit():
+                    idx = int(raw) - 1
+                    if 0 <= idx < len(options):
+                        return options[idx]
+                self.print(f'  Inserisci un numero tra 1 e {len(options)}.')
+        except KeyboardInterrupt:
+            self._exit()
