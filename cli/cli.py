@@ -1,5 +1,7 @@
 import sys
 from typing import Any, Callable
+
+from .colors import Color
 from .banner import banner
 
 # Abilita sequenze ANSI su Windows (richiesto su cmd.exe, no-op su Windows Terminal)
@@ -56,18 +58,19 @@ class Option:
 
 
 class CLI:
-    def __init__(self, name: str = None, input=None, output=None):
+    def __init__(self, name: str = None, color: Color = Color.DEFAULT, input=None, output=None):
         """Inizializza l'interfaccia CLI.
 
         Args:
             name: Nome dell'applicazione. Se fornito, stampa un banner ASCII all'avvio.
+            color: Colore del banner. Se non fornito, stampa il banner del colore di default.
             input: Stream di input (default: sys.stdin).
             output: Stream di output (default: sys.stdout).
         """
         self._input = input or sys.stdin
         self._output = output or sys.stdout
         self._exit_message = ''
-        if name is not None: self.print(banner(name))
+        if name is not None: self.print(color + banner(name) + Color.DEFAULT)
 
     def set_exit_message(self, message: str):
         """Imposta il messaggio mostrato all'uscita (Ctrl+C o exit).

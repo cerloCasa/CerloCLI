@@ -1,7 +1,7 @@
-from cli import CLI, Option
+from cli import CLI, Option, Color
 
 if __name__ == '__main__':
-    cli = CLI()
+    cli = CLI('CLI Test', color=Color.BLUE)
     cli.set_exit_message('Uscita pulita')
 
     name = cli.ask('Come ti chiami?')
