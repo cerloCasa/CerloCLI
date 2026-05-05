@@ -3,6 +3,7 @@ from typing import Any, Callable
 
 from .colors import Color
 from .banner import banner
+from ._spinner import _Spinner
 
 # Abilita sequenze ANSI su Windows (richiesto su cmd.exe, no-op su Windows Terminal)
 if sys.platform == 'win32':
@@ -121,6 +122,24 @@ class CLI:
             text: Testo dell'errore.
         """
         self.print(Color.RED + text + Color.DEFAULT)
+
+    def start_spinner(self, message: str = ''):
+        """Avvia uno spinner animato in background.
+
+        Lo spinner gira finché non viene chiamato ``stop_spinner()``.
+        Durante l'animazione il cursore è nascosto; la riga viene pulita allo stop.
+
+        Args:
+            message: Testo mostrato accanto all'animazione.
+        """
+        self._spinner = _Spinner(message, self._output)
+        self._spinner.start()
+
+    def stop_spinner(self):
+        """Ferma lo spinner avviato da ``start_spinner()`` e pulisce la riga."""
+        if getattr(self, '_spinner', None):
+            self._spinner.stop()
+            self._spinner = None
 
     # --- input ---
 

@@ -1,3 +1,5 @@
+import time
+
 from cli import CLI, Option, Color
 
 if __name__ == '__main__':
@@ -15,5 +17,8 @@ if __name__ == '__main__':
     ])
     cli.success(f'Ottima scelta: {lang}')
 
-    ok = cli.confirm('Vuoi uscire?', default=False)
-    cli.print('Arrivederci!' if ok else 'Continuiamo allora.')
+    ok = cli.confirm('Ti è piaciuto questo test?')
+    cli.start_spinner('Caricamento in corso...')
+    time.sleep(2)
+    cli.stop_spinner()
+    cli.print('Grazie!' if ok else 'Grazie lo stesso!')
