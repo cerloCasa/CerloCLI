@@ -6,6 +6,7 @@ Zero dipendenze esterne, compatibile con Windows, macOS e Linux.
 ## Funzionalità
 
 - Menu navigabile con le frecce ↑↓
+- Ricerca interattiva con filtro in tempo reale
 - Prompt testo con validazione
 - Input password con asterischi
 - Conferma sì/no interattiva
@@ -40,6 +41,14 @@ lingua = cli.choose('Linguaggio preferito?', [
     Option('ts', 'TypeScript'),
     Option('rs', 'Rust'),
 ])
+
+# Ricerca interattiva tra molte opzioni
+città = cli.search('Da quale città vieni?', [
+    Option('MI', 'Milano'),
+    Option('RM', 'Roma'),
+    Option('NA', 'Napoli'),
+    # ...altre opzioni...
+], visible=4)
 
 # Conferma sì/no
 ok = cli.confirm('Vuoi continuare?', default=True)
@@ -81,6 +90,7 @@ cli.print(Color.BLUE + 'testo blu' + Color.DEFAULT)
 | `ask_password(prompt)` | Chiede una password mostrando asterischi |
 | `confirm(prompt, default)` | Menu sì/no, ritorna `bool` |
 | `choose(prompt, options)` | Menu a frecce, ritorna l'`Option` selezionata |
+| `search(prompt, options, visible)` | Ricerca con filtro live, ritorna l'`Option` selezionata |
 | `start_spinner(message)` | Avvia uno spinner animato in background |
 | `stop_spinner()` | Ferma lo spinner e pulisce la riga |
 | `set_exit_message(message)` | Imposta il messaggio mostrato all'uscita |

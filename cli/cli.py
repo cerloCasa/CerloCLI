@@ -317,6 +317,111 @@ class CLI:
             self._output.write('\033[?25h')  # ripristina il cursore
             self._output.flush()
 
+    def search(self, prompt: str, options: list[Option], visible: int = 5) -> Option:
+        """Ricerca interattiva tra le opzioni digitando del testo.
+
+        Mostra le prime ``visible`` opzioni filtrate in base alla query digitata.
+        Frecce ↑↓ per navigare tra i risultati, Invio per confermare.
+        Backspace cancella l'ultimo carattere. Ctrl+C termina il processo.
+        Se l'output non è un TTY ricade sul fallback numerico.
+
+        Args:
+            prompt: Titolo/domanda mostrata sopra il campo di ricerca.
+            options: Lista completa di ``Option`` tra cui cercare (non vuota).
+            visible: Numero massimo di opzioni visibili contemporaneamente (default: 5).
+
+        Returns:
+            L'``Option`` selezionata dall'utente.
+
+        Raises:
+            ValueError: Se ``options`` è una lista vuota.
+        """
+        if not options:
+            raise ValueError('La lista di opzioni non può essere vuota.')
+
+        if not self._is_tty():
+            return self._choose_numeric(prompt, options)
+
+        query = ''
+        selected = 0
+        prev_lines = 0
+
+        def get_filtered() -> list[Option]:
+            if not query:
+                return options[:visible]
+            q = query.lower()
+            return [o for o in options if q in str(o.label).lower()]
+
+        def render(first: bool = False):
+            nonlocal prev_lines, selected
+            filtered = get_filtered()
+            shown = filtered[:visible]
+
+            if shown and selected >= len(shown):
+                selected = len(shown) - 1
+
+            if not first:
+                self._output.write(f'\033[{prev_lines}A')
+
+            self._output.write(f'\r\033[2K> {query}_\n')
+
+            if not shown:
+                self._output.write('\r\033[2K  \033[2m(nessun risultato)\033[0m\n')
+                new_lines = 2
+            else:
+                for i, opt in enumerate(shown):
+                    if i == selected:
+                        self._output.write(f'\r\033[2K  \033[1;7m {opt.label} \033[0m\n')
+                    else:
+                        self._output.write(f'\r\033[2K    {opt.label}\n')
+                new_lines = 1 + len(shown)
+
+            # Cancella le righe rimaste dal render precedente (quando i risultati diminuiscono)
+            extra = prev_lines - new_lines
+            for _ in range(extra):
+                self._output.write('\r\033[2K\n')
+            if extra > 0:
+                self._output.write(f'\033[{extra}A')
+
+            prev_lines = new_lines
+            self._output.flush()
+
+        self._output.write('\033[?25l')
+        try:
+            self.print(prompt)
+            render(first=True)
+
+            while True:
+                key = _read_key()
+                filtered = get_filtered()
+                shown = filtered[:visible]
+
+                if key == 'UP':
+                    if shown:
+                        selected = (selected - 1) % len(shown)
+                        render()
+                elif key == 'DOWN':
+                    if shown:
+                        selected = (selected + 1) % len(shown)
+                        render()
+                elif key == 'ENTER':
+                    if shown:
+                        return shown[selected]
+                elif key in ('\x08', '\x7f'):  # Backspace
+                    if query:
+                        query = query[:-1]
+                        selected = 0
+                        render()
+                elif len(key) == 1 and key >= ' ':
+                    query += key
+                    selected = 0
+                    render()
+        except KeyboardInterrupt:
+            self._exit()
+        finally:
+            self._output.write('\033[?25h')
+            self._output.flush()
+
     def _choose_numeric(self, prompt: str, options: list[Option]) -> Option:
         """Fallback testabile: selezione tramite numero."""
         try:

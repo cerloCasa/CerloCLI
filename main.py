@@ -17,6 +17,14 @@ if __name__ == '__main__':
     ])
     cli.success(f'Ottima scelta: {lang}')
 
+    city = cli.search('Da quale città vieni?', [
+        Option('MI', 'Milano'), Option('RM', 'Roma'), Option('NA', 'Napoli'),
+        Option('TO', 'Torino'), Option('BO', 'Bologna'), Option('FI', 'Firenze'),
+        Option('VE', 'Venezia'), Option('GE', 'Genova'), Option('PA', 'Palermo'),
+        Option('BA', 'Bari'), Option('CT', 'Catania'), Option('TR', 'Trento'),
+    ], visible=4)
+    cli.print(f'Città: {city}')
+
     ok = cli.confirm('Ti è piaciuto questo test?')
     cli.start_spinner('Caricamento in corso...')
     time.sleep(2)
